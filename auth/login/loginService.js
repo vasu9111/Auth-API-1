@@ -1,7 +1,7 @@
 import userMdl from "../../schemas/userMdl.js";
 import utils from "../utils/utils.js";
 
-const loginUser = async (req, res, next) => {
+const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   const findUserInDb = await userMdl.user.findOne({ email });

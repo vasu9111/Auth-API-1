@@ -39,7 +39,13 @@ const generateRefreshToken = async (userId) => {
 };
 
 const refreshAccessToken = async (req, res, next) => {
-  const token = req.session.refreshToken;
+  // const token = req.session.refreshToken;
+
+  let token;
+  const authToken = req.headers["authorization"];
+  if (authToken && authToken.startsWith("Bearer ")) {
+    token = authToken.split(" ")[1];
+  }
 
   if (!token) {
     const error = new Error(
