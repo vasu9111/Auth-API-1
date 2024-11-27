@@ -42,10 +42,8 @@ const validate = (schema) => {
       next();
     } catch (error) {
       const errorMessage = error.details.map((detail) => detail.message);
-      // res.status(400).json({ error: errorMessage });
-      console.log(errorMessage);
-
-      return next([errorMessage]);
+      res.status(400).json({ error: errorMessage });
+      // console.log(errorMessage);
     }
   };
 };

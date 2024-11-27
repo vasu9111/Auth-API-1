@@ -1,6 +1,12 @@
 import express from "express";
-import registerController from "./register/registerController.js";
-import loginController from "./login/loginController.js";
+//custom validation
+import customRegisterController from "./customValidation/register/registerController.js";
+import customLoginController from "./customValidation/login/loginControllers.js";
+
+//joi validation
+import joiRegisterController from "./joiValidation/register/registerController.js";
+import joiLoginController from "./joiValidation/login/loginControllers.js";
+
 import utils from "./utils/utils.js";
 import userMdl from "../schemas/userMdl.js";
 import authMiddleware from "./middleware/authMiddleware.js";
@@ -13,14 +19,15 @@ const router = express.Router();
 router.post(
   "/register/custom-validation",
   customRegisterMiddleware.customRegisterValidation,
-  registerController.registerUser
+  customRegisterController.registerUser
 );
 
-// router.post(
-//   "/register/joi-validation",
-//   validationMiddleware.validate(userMdl.userRegisterValidateSchema),
-//   registerController.registerUser
-// );
+//JOI library validation for register
+router.post(
+  "/register/joi-validation",
+  authMiddleware.validate(userMdl.userRegisterValidateSchema),
+  joiRegisterController.registerUser
+);
 
 // ------------------------------------------------------------------------------------------
 
@@ -28,18 +35,23 @@ router.post(
 router.post(
   "/login/custom-validation",
   customLoginMiddleware.customLoginValidation,
-  loginController.loginUser
+  customLoginController.loginUser
 );
 
-// router.post(
-//   "/login/joi-validation",
-//   validationMiddleware.validate(userMdl.userLoginValidateSchema),
-//   loginController.loginUser
-// );
+//JOI library validation for login
+router.post(
+  "/login/joi-validation",
+  authMiddleware.validate(userMdl.userLoginValidateSchema),
+  joiLoginController.loginUser
+);
 
 // ------------------------------------------------------------------------------------------
 
-router.post("/logout", authMiddleware.verifyToken, loginController.logOutUser);
+router.post(
+  "/logout",
+  authMiddleware.verifyToken,
+  customLoginController.logOutUser
+);
 
 // ------------------------------------------------------------------------------------------
 
