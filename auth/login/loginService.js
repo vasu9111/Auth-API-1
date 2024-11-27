@@ -1,4 +1,3 @@
-import { connect } from "mongoose";
 import userMdl from "../../schemas/userMdl.js";
 import utils from "../utils/utils.js";
 
@@ -6,17 +5,6 @@ const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
   const findUserInDb = await userMdl.user.findOne({ email });
-  if (!findUserInDb) {
-    const error = new Error("INVALID EMAIL ID CREDENTIAL");
-    error.status = 400;
-    throw error;
-  }
-
-  if (password !== findUserInDb.password) {
-    const error = new Error("INVALID PASSWORD CREDENTIAL");
-    error.status = 401;
-    throw error;
-  }
 
   const accessToken = await utils.generateAccessToken(findUserInDb._id);
   const refreshToken = await utils.generateRefreshToken(findUserInDb._id);
