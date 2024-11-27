@@ -1,9 +1,9 @@
-import user from "../../schemas/userMdl.js";
+import userMdl from "../../schemas/userMdl.js";
 
 const userProfile = async (req, res) => {
   const userId = req.user;
 
-  const findUserData = await user.findOne({ _id: userId });
+  const findUserData = await userMdl.user.findOne({ _id: userId });
 
   const userProfile = {
     name: findUserData.name,
