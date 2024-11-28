@@ -1,5 +1,3 @@
-import userMdl from "../../schemas/userMdl.js";
-
 const emailExistingCheck = async (email) => {
   const countEmailExisting = await userMdl.user.countDocuments({ email });
 
@@ -57,22 +55,6 @@ const customRegisterValidation = async (req, res, next) => {
   next();
 };
 
-const validate = (schema) => {
-  return async (req, res, next) => {
-    try {
-      await schema.validateAsync(req.body, { abortEarly: false }); // abortearly for stopping code to be exit when one error occur then show all errors in array in object
-      next();
-    } catch (error) {
-      const errorMessage = error.details.map((detail) => detail.message);
-      res.status(400).json({ error: errorMessage });
-      console.log(errorMessage);
-    }
-  };
-};
-
-const customRenewAccessTokenValidation = async (req, res, next) => {};
-
 export default {
   customRegisterValidation,
-  validate,
 };
