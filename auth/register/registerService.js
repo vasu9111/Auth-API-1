@@ -39,7 +39,7 @@ const registerUser = async (req, res, next) => {
 
     return { newUser, accessToken: accessToken, refreshToken: refreshToken };
   } catch (err) {
-    const error = new Error({ error: "Database error: " + err.message });
+    const error = new Error(err.message);
     error.status = 400;
     throw error;
   }
