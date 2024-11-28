@@ -2,24 +2,41 @@ import userMdl from "../../schemas/userMdl.js";
 import utils from "../utils/utils.js";
 
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const findUserInDb = await userMdl.user.findOne({ email });
+    const findUserInDb = await userMdl.user.findOne({ email });
 
-  const accessToken = await utils.generateAccessToken(findUserInDb._id);
-  const refreshToken = await utils.generateRefreshToken(findUserInDb._id);
+    if (!findUserInDb) {
+      const error = new Error("USER NOT EXIST");
+      error.status = 400;
+      throw error;
+    }
 
-  req.session.accessToken = accessToken;
-  req.session.refreshToken = refreshToken;
+    if (password !== findUserInDb.password) {
+      const error = new Error("INVALID PASSWORD");
+      error.status = 401;
+      throw error;
+    }
 
-  // res.cookie("accessToken", accessToken);
-  // res.cookie("refreshToken", refreshToken);
+    const accessToken = await utils.generateAccessToken(findUserInDb._id);
+    const refreshToken = await utils.generateRefreshToken(findUserInDb._id);
 
-  return {
-    message: `User ${findUserInDb.name} LoggedIn Successfully`,
-    accessToken: accessToken,
-    refreshToken: refreshToken,
-  };
+    req.session.accessToken = accessToken;
+    req.session.refreshToken = refreshToken;
+
+    // res.cookie("accessToken", accessToken);
+    // res.cookie("refreshToken", refreshToken);
+
+    return {
+      message: `User ${findUserInDb.name} LoggedIn Successfully`,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    };
+  } catch (err) {
+    const error = new Error(err.message);
+    throw error;
+  }
 };
 
 const logOutUser = async (req, res, next) => {
@@ -53,4 +70,5 @@ const logOutUser = async (req, res, next) => {
     throw err;
   }
 };
+
 export default { loginUser, logOutUser };
