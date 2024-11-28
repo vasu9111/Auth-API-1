@@ -1,3 +1,5 @@
+import userMdl from "../../schemas/userMdl.js";
+
 const emailExistingCheck = async (email) => {
   const countEmailExisting = await userMdl.user.countDocuments({ email });
 
