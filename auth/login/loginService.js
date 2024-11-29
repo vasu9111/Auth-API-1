@@ -5,22 +5,22 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const findUserInDb = await userMdl.user.findOne({ email });
+    const foundUserInDb = await userMdl.user.findOne({ email });
 
-    if (!findUserInDb) {
+    if (!foundUserInDb) {
       const error = new Error("USER NOT EXIST");
       error.status = 400;
       throw error;
     }
 
-    if (password !== findUserInDb.password) {
+    if (password !== foundUserInDb.password) {
       const error = new Error("INVALID PASSWORD");
       error.status = 401;
       throw error;
     }
 
-    const accessToken = await utils.generateAccessToken(findUserInDb._id);
-    const refreshToken = await utils.generateRefreshToken(findUserInDb._id);
+    const accessToken = await utils.generateAccessToken(foundUserInDb._id);
+    const refreshToken = await utils.generateRefreshToken(foundUserInDb._id);
 
     req.session.accessToken = accessToken;
     req.session.refreshToken = refreshToken;
@@ -29,7 +29,7 @@ const loginUser = async (req, res) => {
     // res.cookie("refreshToken", refreshToken);
 
     return {
-      message: `User ${findUserInDb.name} LoggedIn Successfully`,
+      message: `User ${foundUserInDb.name} LoggedIn Successfully`,
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
@@ -43,16 +43,16 @@ const logOutUser = async (req, res, next) => {
   try {
     const userId = req.user;
 
-    const findUserData = await userMdl.user.findOne({ _id: userId });
+    const foundUserInDb = await userMdl.user.findOne({ _id: userId });
 
-    if (!findUserData) {
+    if (!foundUserInDb) {
       const error = new Error("USER NOT FOUND");
       error.status = 400;
       throw error;
     }
 
-    findUserData.refreshToken = null;
-    await findUserData.save();
+    foundUserInDb.refreshToken = null;
+    await foundUserInDb.save();
 
     req.session.destroy((err) => {
       if (err) {

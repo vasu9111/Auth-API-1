@@ -3,12 +3,12 @@ import userMdl from "../../schemas/userMdl.js";
 const userProfile = async (req, res) => {
   const userId = req.user;
 
-  const findUserData = await userMdl.user.findOne({ _id: userId });
+  const foundUserInDb = await userMdl.user.findOne({ _id: userId });
 
   const userProfile = {
-    name: findUserData.name,
-    email: findUserData.email,
-    registeredAt: findUserData.registeredAt,
+    name: foundUserInDb.name,
+    email: foundUserInDb.email,
+    registeredAt: foundUserInDb.registeredAt,
   };
 
   res.status(200).json(userProfile);

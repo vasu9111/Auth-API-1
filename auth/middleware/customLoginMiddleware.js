@@ -34,14 +34,14 @@ const customLoginValidation = async (req, res, next) => {
     }
   }
 
-  const userData = await userMdl.user.findOne({ email });
-  //   console.log(userData);
+  const foundUserInDb = await userMdl.user.findOne({ email });
+  //   console.log(foundUserInDb);
 
   if (!password) {
     const error = new Error("Password is required");
     error.status = 400;
     return next(error);
-  } else if (password !== userData.password) {
+  } else if (password !== foundUserInDb.password) {
     const error = new Error("INVALID PASSWORD");
     error.status = 401;
     return next(error);
