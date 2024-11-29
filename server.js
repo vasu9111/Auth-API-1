@@ -5,6 +5,7 @@ import nodemon from "nodemon";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import router from "./indexRoutes.js";
+import "dotenv/config";
 
 const PORT = process.env.PORT;
 const MY_DB_URL = process.env.MY_DB_URL;
