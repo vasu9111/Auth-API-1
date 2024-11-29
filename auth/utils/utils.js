@@ -27,10 +27,10 @@ const generateRefreshToken = async (userId) => {
       }
     );
 
-    const userData = await userMdl.user.findOne(userId);
-    userData.refreshToken = refreshToken;
+    const foundUserInDb = await userMdl.user.findOne(userId);
+    foundUserInDb.refreshToken = refreshToken;
 
-    await userData.save();
+    await foundUserInDb.save();
 
     return refreshToken;
   } catch (error) {
@@ -56,15 +56,15 @@ const refreshAccessToken = async (req, res, next) => {
   }
   try {
     const decodedToken = jwt.verify(token, process.env.REFRESH_TOKEN_KEY);
-    const findUserData = await userMdl.user.findOne({ _id: decodedToken._id });
+    const foundUserInDb = await userMdl.user.findOne({ _id: decodedToken._id });
 
-    if (!findUserData) {
+    if (!foundUserInDb) {
       const error = new Error("USER NOT FOUND");
       error.status = 400;
       throw error;
     }
 
-    if (token !== findUserData.refreshToken) {
+    if (token !== foundUserInDb.refreshToken) {
       const error = new Error("REFRESH TOKEN IS EXPIRED OR IN USE");
       error.status = 401;
       return next(error);
