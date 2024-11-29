@@ -1,31 +1,26 @@
 import userMdl from "../../schemas/userMdl.js";
 import jwt from "jsonwebtoken";
+import env from "../../env.js";
 
 const generateAccessToken = async (userId) => {
   try {
-    const accessToken = jwt.sign(
-      { _id: userId },
-      process.env.ACCESS_TOKEN_KEY,
-      {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-      }
-    );
+    const accessToken = jwt.sign({ _id: userId }, env.ACCESS_TOKEN_KEY, {
+      expiresIn: env.ACCESS_TOKEN_EXPIRY,
+    });
 
     return accessToken;
-  } catch (error) {
-    throw new Error("Something goes wrong while generating Access Token");
+  } catch (err) {
+    const error = new Error(err.message);
+    error.status = 400;
+    return next(error);
   }
 };
 
 const generateRefreshToken = async (userId) => {
   try {
-    const refreshToken = jwt.sign(
-      { _id: userId },
-      process.env.REFRESH_TOKEN_KEY,
-      {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-      }
-    );
+    const refreshToken = jwt.sign({ _id: userId }, env.REFRESH_TOKEN_KEY, {
+      expiresIn: env.REFRESH_TOKEN_EXPIRY,
+    });
 
     const foundUserInDb = await userMdl.user.findOne(userId);
     foundUserInDb.refreshToken = refreshToken;
@@ -33,8 +28,10 @@ const generateRefreshToken = async (userId) => {
     await foundUserInDb.save();
 
     return refreshToken;
-  } catch (error) {
-    throw new Error("Something goes wrong while generating Refresh Token");
+  } catch (err) {
+    const error = new Error(err.message);
+    error.status = 400;
+    return next(error);
   }
 };
 
@@ -55,13 +52,13 @@ const refreshAccessToken = async (req, res, next) => {
     return next(error);
   }
   try {
-    const decodedToken = jwt.verify(token, process.env.REFRESH_TOKEN_KEY);
+    const decodedToken = jwt.verify(token, env.REFRESH_TOKEN_KEY);
     const foundUserInDb = await userMdl.user.findOne({ _id: decodedToken._id });
 
     if (!foundUserInDb) {
       const error = new Error("USER NOT FOUND");
       error.status = 400;
-      throw error;
+      return next(error);
     }
 
     if (token !== foundUserInDb.refreshToken) {
@@ -78,7 +75,7 @@ const refreshAccessToken = async (req, res, next) => {
       accessToken: accessToken,
     });
   } catch (err) {
-    const error = new Error("Something goes wrong while refresh access token");
+    const error = new Error(err.message);
     error.status = 401;
     return next(error);
   }
