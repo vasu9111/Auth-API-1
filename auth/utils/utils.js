@@ -49,7 +49,7 @@ const refreshAccessToken = async (req, res, next) => {
 
   if (!token) {
     const error = new Error(
-      "Refresh Token Is Unavailable / Access Denied, Please Log In "
+      "Refresh Token Is Unavailable / Access Denied, Please Log In First"
     );
     error.status = 401;
     return next(error);
