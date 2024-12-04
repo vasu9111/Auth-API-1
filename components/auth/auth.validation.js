@@ -5,7 +5,7 @@ const userRegisterValidate = Joi.object({
     "string.empty": "Name cannot be empty",
     "any.required": "Name must be required",
   }),
-  email: Joi.string().email().unique().required().messages({
+  email: Joi.string().email().required().messages({
     "string.empty": "Email Id cannot be empty",
     "string.email": "Please enter a valid email address.",
     "any.required": "Email Id must be required",
