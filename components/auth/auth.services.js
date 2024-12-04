@@ -1,9 +1,10 @@
 import userMdl from "../../schemas/userMdl.js";
-import utils from "../utils/utils.js";
+import utils from "../../utils/utils.js";
 
-const loginUser = async (req, res) => {
+//login
+const loginUser = async (reqBody) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = reqBody;
 
     const foundUserInDb = await userMdl.user.findOne({ email });
 
@@ -22,14 +23,7 @@ const loginUser = async (req, res) => {
     const accessToken = await utils.generateAccessToken(foundUserInDb._id);
     const refreshToken = await utils.generateRefreshToken(foundUserInDb._id);
 
-    req.session.accessToken = accessToken;
-    req.session.refreshToken = refreshToken;
-
-    // res.cookie("accessToken", accessToken);
-    // res.cookie("refreshToken", refreshToken);
-
     return {
-      message: `User ${foundUserInDb.name} LoggedIn Successfully`,
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
@@ -39,7 +33,8 @@ const loginUser = async (req, res) => {
   }
 };
 
-const logOutUser = async (req, res, next) => {
+//logout
+const logOutUser = async (req, res) => {
   try {
     const userId = req.user;
 
@@ -71,4 +66,47 @@ const logOutUser = async (req, res, next) => {
   }
 };
 
-export default { loginUser, logOutUser };
+//register
+
+const emailExistingCheck = async (email) => {
+  const countEmailExisting = await userMdl.user.countDocuments({ email });
+
+  if (countEmailExisting > 0) {
+    return true;
+  }
+  return false;
+};
+
+const registerUser = async (reqBody) => {
+  try {
+    const { name, email, password } = reqBody;
+
+    const emailExistCheck = await emailExistingCheck(email);
+
+    if (emailExistCheck) {
+      const error = new Error("USER ALREADY EXIST");
+      error.status = 400;
+      throw error;
+    }
+
+    const userData = await userMdl.user({
+      name: name,
+      email: email,
+      password: password,
+      registeredAt: new Date().toISOString(),
+    });
+
+    const newUser = await userData.save();
+
+    const accessToken = await utils.generateAccessToken(newUser._id);
+    const refreshToken = await utils.generateRefreshToken(newUser._id);
+
+    return { newUser, accessToken: accessToken, refreshToken: refreshToken };
+  } catch (err) {
+    const error = new Error(err.message);
+    error.status = 400;
+    throw error;
+  }
+};
+
+export default { loginUser, logOutUser, registerUser };

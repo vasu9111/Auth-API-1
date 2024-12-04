@@ -9,6 +9,43 @@ const emailExistingCheck = async (email) => {
   return false;
 };
 
+const customLoginValidation = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email) {
+    const error = new Error("Email id is required");
+    error.status = 400;
+    return next(error);
+  } else if (!email.includes("@")) {
+    const error = new Error("Email id is in invalid format");
+    error.status = 400;
+    return next(error);
+  } else {
+    const emailExistCheck = await emailExistingCheck(email);
+
+    if (!emailExistCheck) {
+      const error = new Error("USER DOES NOT EXIST");
+      error.status = 400;
+      return next(error);
+    }
+  }
+
+  const foundUserInDb = await userMdl.user.findOne({ email });
+  //   console.log(foundUserInDb);
+
+  if (!password) {
+    const error = new Error("Password is required");
+    error.status = 400;
+    return next(error);
+  } else if (password !== foundUserInDb.password) {
+    const error = new Error("INVALID PASSWORD");
+    error.status = 401;
+    return next(error);
+  }
+
+  next();
+};
+
 const customRegisterValidation = async (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -58,5 +95,6 @@ const customRegisterValidation = async (req, res, next) => {
 };
 
 export default {
+  customLoginValidation,
   customRegisterValidation,
 };
