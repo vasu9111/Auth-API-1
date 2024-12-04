@@ -11,8 +11,9 @@ const generateAccessToken = async (userId) => {
     return accessToken;
   } catch (err) {
     const error = new Error(err.message);
-    error.status = 400;
-    return next(error);
+    error.code = err.code || "SERVER_ERR";
+    error.status = err.status || 500;
+    throw error;
   }
 };
 
@@ -30,8 +31,9 @@ const generateRefreshToken = async (userId) => {
     return refreshToken;
   } catch (err) {
     const error = new Error(err.message);
-    error.status = 400;
-    return next(error);
+    error.code = err.code || "SERVER_ERR";
+    error.status = err.status || 500;
+    throw error;
   }
 };
 
@@ -45,9 +47,8 @@ const refreshAccessToken = async (req, res, next) => {
   }
 
   if (!token) {
-    const error = new Error(
-      "Refresh Token Is Unavailable / Access Denied, Please Log In First"
-    );
+    const error = new Error("Refresh Token Is Unavailable");
+    error.code = "REFRESH_TOKEN_MISSING";
     error.status = 401;
     return next(error);
   }
@@ -56,13 +57,15 @@ const refreshAccessToken = async (req, res, next) => {
     const foundUserInDb = await userMdl.user.findOne({ _id: decodedToken._id });
 
     if (!foundUserInDb) {
-      const error = new Error("USER NOT FOUND");
-      error.status = 400;
+      const error = new Error("User not found");
+      error.code = "USER_NOT_FOUND";
+      error.status = 404;
       return next(error);
     }
 
     if (token !== foundUserInDb.refreshToken) {
-      const error = new Error("REFRESH TOKEN IS EXPIRED OR IN USE");
+      const error = new Error("Refresh token expired or in use");
+      error.code = "REFRESH_TOKEN_EXPIRED";
       error.status = 401;
       return next(error);
     }
@@ -76,8 +79,9 @@ const refreshAccessToken = async (req, res, next) => {
     });
   } catch (err) {
     const error = new Error(err.message);
-    error.status = 401;
-    return next(error);
+    error.code = err.code || "SERVER_ERR";
+    error.status = err.status || 500;
+    throw error;
   }
 };
 
