@@ -13,19 +13,22 @@ const customLoginValidation = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email) {
-    const error = new Error("Email id is required");
+    const error = new Error("Email ID is required");
+    error.code = "EMAIL_REQUIRED";
     error.status = 400;
     return next(error);
   } else if (!email.includes("@")) {
-    const error = new Error("Email id is in invalid format");
+    const error = new Error("Email ID is in invalid format");
+    error.code = "INVALID_EMAIL";
     error.status = 400;
     return next(error);
   } else {
     const emailExistCheck = await emailExistingCheck(email);
 
     if (!emailExistCheck) {
-      const error = new Error("USER DOES NOT EXIST");
-      error.status = 400;
+      const error = new Error("User not found");
+      error.code = "USER_NOT_FOUND";
+      error.status = 404;
       return next(error);
     }
   }
@@ -35,10 +38,12 @@ const customLoginValidation = async (req, res, next) => {
 
   if (!password) {
     const error = new Error("Password is required");
+    error.code = "PASSWORD_REQUIRED";
     error.status = 400;
     return next(error);
   } else if (password !== foundUserInDb.password) {
-    const error = new Error("INVALID PASSWORD");
+    const error = new Error("Invalid password");
+    error.code = "INVALID_PASSWORD";
     error.status = 401;
     return next(error);
   }
@@ -54,39 +59,46 @@ const customRegisterValidation = async (req, res, next) => {
   //   console.log(password.length > 18);
 
   if (!name) {
-    const error = new Error("name is required");
+    const error = new Error("Name is required");
+    error.code = "NAME_REQUIRED";
     error.status = 400;
     return next(error);
   } else if (name.length < 1) {
-    const error = new Error("name can't be null");
+    const error = new Error("Name can't be null");
+    error.code = "NAME_REQUIRED";
     error.status = 400;
     return next(error);
   }
 
   if (!email) {
-    const error = new Error("Email id is required");
+    const error = new Error("Email ID is required");
+    error.code = "EMAIL_REQUIRED";
     error.status = 400;
     return next(error);
   } else if (!email.includes("@")) {
-    const error = new Error("Email id is in invalid format");
+    const error = new Error("Email ID is in invalid format");
+    error.code = "EMAIL_INVALID";
     error.status = 400;
     return next(error);
   } else {
     const emailExistCheck = await emailExistingCheck(email);
 
     if (emailExistCheck) {
-      const error = new Error("USER ALREADY EXIST");
-      error.status = 400;
+      const error = new Error("User already exist");
+      error.code = "USER_EXIST";
+      error.status = 409;
       return next(error);
     }
   }
 
   if (!password) {
     const error = new Error("Password is required");
+    error.code = "PASSWORD_REQUIRED";
     error.status = 400;
     return next(error);
   } else if (password.length < 6 || password.length > 18) {
     const error = new Error("Password must be 6 digit short and 18 digit long");
+    error.code = "PASSWORD_INVALID";
     error.status = 400;
     return next(error);
   }

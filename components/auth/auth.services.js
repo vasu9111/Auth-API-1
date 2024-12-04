@@ -9,13 +9,15 @@ const loginUser = async (reqBody) => {
     const foundUserInDb = await userMdl.user.findOne({ email });
 
     if (!foundUserInDb) {
-      const error = new Error("USER NOT EXIST");
-      error.status = 400;
+      const error = new Error("User not found");
+      error.code = "USER_NOT_FOUND";
+      error.status = 404;
       throw error;
     }
 
     if (password !== foundUserInDb.password) {
-      const error = new Error("INVALID PASSWORD");
+      const error = new Error("Invalid Password");
+      error.code = "INVALID_PASSWORD";
       error.status = 401;
       throw error;
     }
@@ -29,6 +31,8 @@ const loginUser = async (reqBody) => {
     };
   } catch (err) {
     const error = new Error(err.message);
+    error.code = err.code || "SERVER_ERR";
+    error.status = err.status || 500;
     throw error;
   }
 };
@@ -41,8 +45,9 @@ const logOutUser = async (req, res) => {
     const foundUserInDb = await userMdl.user.findOne({ _id: userId });
 
     if (!foundUserInDb) {
-      const error = new Error("USER NOT FOUND");
-      error.status = 400;
+      const error = new Error("User not found");
+      error.code = "USER_NOT_FOUND";
+      error.status = 404;
       throw error;
     }
 
@@ -52,6 +57,7 @@ const logOutUser = async (req, res) => {
     req.session.destroy((err) => {
       if (err) {
         const error = new Error("Something went wrong during logout.");
+        error.code = "ERR_LOGOUT";
         error.status = 400;
         throw error;
       }
@@ -59,10 +65,11 @@ const logOutUser = async (req, res) => {
 
     res.clearCookie("connect.sid");
     return { message: "Logged out successfully." };
-  } catch (error) {
-    const err = new Error("error while logout");
-    err.status = 400;
-    throw err;
+  } catch (err) {
+    const error = new Error(err.message);
+    error.code = err.code || "SERVER_ERR";
+    error.status = err.status || 500;
+    throw error;
   }
 };
 
@@ -84,8 +91,9 @@ const registerUser = async (reqBody) => {
     const emailExistCheck = await emailExistingCheck(email);
 
     if (emailExistCheck) {
-      const error = new Error("USER ALREADY EXIST");
-      error.status = 400;
+      const error = new Error("User already exist");
+      error.code = "USER_EXIST";
+      error.status = 409;
       throw error;
     }
 
@@ -104,7 +112,8 @@ const registerUser = async (reqBody) => {
     return { newUser, accessToken: accessToken, refreshToken: refreshToken };
   } catch (err) {
     const error = new Error(err.message);
-    error.status = 400;
+    error.code = err.code || "SERVER_ERR";
+    error.status = err.status || 500;
     throw error;
   }
 };
