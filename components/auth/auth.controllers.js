@@ -1,5 +1,16 @@
 import authServices from "./auth.services.js";
 
+const registerUser = async (req, res, next) => {
+  try {
+    const tokenData = await authServices.registerUser(req.body);
+    req.session.accessToken = tokenData.accessToken;
+    req.session.refreshToken = tokenData.refreshToken;
+    res.status(201).json(tokenData);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const loginUser = async (req, res, next) => {
   try {
     const tokenData = await authServices.loginUser(req.body);
@@ -21,15 +32,4 @@ const logOutUser = async (req, res, next) => {
   }
 };
 
-const registerUser = async (req, res, next) => {
-  try {
-    const tokenData = await authServices.registerUser(req.body);
-    req.session.accessToken = tokenData.accessToken;
-    req.session.refreshToken = tokenData.refreshToken;
-    res.status(201).json(tokenData);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export default { loginUser, logOutUser, registerUser };
+export default { registerUser, loginUser, logOutUser };
