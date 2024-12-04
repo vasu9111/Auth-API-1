@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const userRegisterValidateSchema = Joi.object({
+const userRegisterValidate = Joi.object({
   name: Joi.string().required().messages({
     "string.empty": "Name cannot be empty",
     "any.required": "Name Must Be Required",
@@ -18,7 +18,7 @@ const userRegisterValidateSchema = Joi.object({
   }),
 });
 
-const userLoginValidateSchema = Joi.object({
+const userLoginValidate = Joi.object({
   email: Joi.string().email().required().messages({
     "string.empty": "Email Id cannot be empty",
     "string.email": "Please enter a valid email address.",
@@ -30,4 +30,4 @@ const userLoginValidateSchema = Joi.object({
   }),
 });
 
-export default { userRegisterValidateSchema, userLoginValidateSchema };
+export default { userRegisterValidate, userLoginValidate };

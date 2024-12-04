@@ -1,11 +1,11 @@
-import userMdl from "../../schemas/userMdl.js";
+import userMdl from "../schemas/userMdl.js";
 import jwt from "jsonwebtoken";
-import env from "../../env.js";
+import env from "../config.js";
 
 const generateAccessToken = async (userId) => {
   try {
-    const accessToken = jwt.sign({ _id: userId }, env.ACCESS_TOKEN_KEY, {
-      expiresIn: env.ACCESS_TOKEN_EXPIRY,
+    const accessToken = jwt.sign({ _id: userId }, env.jwt.ACCESS_TOKEN_KEY, {
+      expiresIn: env.jwt.ACCESS_TOKEN_EXPIRY,
     });
 
     return accessToken;
@@ -18,8 +18,8 @@ const generateAccessToken = async (userId) => {
 
 const generateRefreshToken = async (userId) => {
   try {
-    const refreshToken = jwt.sign({ _id: userId }, env.REFRESH_TOKEN_KEY, {
-      expiresIn: env.REFRESH_TOKEN_EXPIRY,
+    const refreshToken = jwt.sign({ _id: userId }, env.jwt.REFRESH_TOKEN_KEY, {
+      expiresIn: env.jwt.REFRESH_TOKEN_EXPIRY,
     });
 
     const foundUserInDb = await userMdl.user.findOne(userId);
@@ -52,7 +52,7 @@ const refreshAccessToken = async (req, res, next) => {
     return next(error);
   }
   try {
-    const decodedToken = jwt.verify(token, env.REFRESH_TOKEN_KEY);
+    const decodedToken = jwt.verify(token, env.jwt.REFRESH_TOKEN_KEY);
     const foundUserInDb = await userMdl.user.findOne({ _id: decodedToken._id });
 
     if (!foundUserInDb) {

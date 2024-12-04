@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import router from "./indexRoutes.js";
 import "dotenv/config";
-import env from "./env.js";
+import env from "./config.js";
 
 mongoose
   .connect(env.MY_DB_URL)
