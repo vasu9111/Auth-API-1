@@ -1,5 +1,5 @@
 import userMdl from "../../schemas/userMdl.js";
-import utils from "../../utils/utils.js";
+import authHelper from "../../helper/authHelper.js";
 
 //login
 const loginUser = async (reqBody) => {
@@ -22,8 +22,10 @@ const loginUser = async (reqBody) => {
       throw error;
     }
 
-    const accessToken = await utils.generateAccessToken(foundUserInDb._id);
-    const refreshToken = await utils.generateRefreshToken(foundUserInDb._id);
+    const accessToken = await authHelper.generateAccessToken(foundUserInDb._id);
+    const refreshToken = await authHelper.generateRefreshToken(
+      foundUserInDb._id
+    );
 
     return {
       accessToken: accessToken,
@@ -40,7 +42,7 @@ const loginUser = async (reqBody) => {
 //logout
 const logOutUser = async (req, res) => {
   try {
-    const userId = req.user;
+    const userId = req.user._id;
 
     const foundUserInDb = await userMdl.user.findOne({ _id: userId });
 
@@ -106,8 +108,8 @@ const registerUser = async (reqBody) => {
 
     const newUser = await userData.save();
 
-    const accessToken = await utils.generateAccessToken(newUser._id);
-    const refreshToken = await utils.generateRefreshToken(newUser._id);
+    const accessToken = await authHelper.generateAccessToken(newUser._id);
+    const refreshToken = await authHelper.generateRefreshToken(newUser._id);
 
     return { newUser, accessToken: accessToken, refreshToken: refreshToken };
   } catch (err) {

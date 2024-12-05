@@ -10,8 +10,8 @@ const verifyToken = (req, res, next) => {
 
     if (authToken && authToken.startsWith("Bearer ")) {
       token = authToken.split(" ")[1];
-      // console.log("only Token:", token);
     }
+    // console.log(token);
 
     if (!token) {
       const error = new Error("Token is not available in header");
@@ -29,7 +29,8 @@ const verifyToken = (req, res, next) => {
 
     const decodedToken = jwt.verify(token, env.jwt.ACCESS_TOKEN_KEY);
 
-    req.user = decodedToken._id;
+    req.user = decodedToken;
+
     next();
   } catch (err) {
     const error = new Error(err.message);
