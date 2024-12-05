@@ -13,7 +13,7 @@ const generateAccessToken = async (userId) => {
     const error = new Error(err.message);
     error.code = err.code || "SERVER_ERR";
     error.status = err.status || 500;
-    throw error;
+    return next(error);
   }
 };
 
@@ -33,7 +33,7 @@ const generateRefreshToken = async (userId) => {
     const error = new Error(err.message);
     error.code = err.code || "SERVER_ERR";
     error.status = err.status || 500;
-    throw error;
+    return next(error);
   }
 };
 
@@ -81,7 +81,7 @@ const refreshAccessToken = async (req, res, next) => {
     const error = new Error(err.message);
     error.code = err.code || "SERVER_ERR";
     error.status = err.status || 500;
-    throw error;
+    return next(error);
   }
 };
 
