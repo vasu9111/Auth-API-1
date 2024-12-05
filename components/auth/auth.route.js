@@ -1,10 +1,10 @@
 import express from "express";
 
 //controller files
-import authControllers from "./auth.controllers.js";
+import authController from "./auth.controller.js";
 
-//utilities file
-import utils from "../../utils/utils.js";
+//helper file
+import authHelper from "../../helper/authHelper.js";
 
 //middlewares
 import authMiddleware from "../../middleware/authMiddleware.js";
@@ -19,32 +19,35 @@ const router = express.Router();
 router.post(
   "/registration/custom-validation",
   authCustomValidation.customRegisterValidation,
-  authControllers.registerUser
+  authController.registerUser
 );
 
 router.post(
   "/login/custom-validation",
   authCustomValidation.customLoginValidation,
-  authControllers.loginUser
+  authController.loginUser
 );
 
 //joi validation
 router.post(
   "/registration/joi-validation",
   authMiddleware.validate(authValidation.userRegisterValidate),
-  authControllers.registerUser
+  authController.registerUser
 );
 
 router.post(
   "/login/joi-validation",
   authMiddleware.validate(authValidation.userLoginValidate),
-  authControllers.loginUser
+  authController.loginUser
 );
+
+//DB validation
+router.post("/registration/db-validation", authController.registerUser);
 
 // ------------------------------------------------------------------------------------------
 
-router.post("/logout", authMiddleware.verifyToken, authControllers.logOutUser);
+router.post("/logout", authMiddleware.verifyToken, authController.logOutUser);
 
-router.post("/refresh", utils.refreshAccessToken);
+router.post("/refresh", authHelper.refreshAccessToken);
 
 export default router;

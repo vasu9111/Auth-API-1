@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import router from "./indexRoutes.js";
-import "dotenv/config";
 import env from "./config.js";
+import cors from "cors";
 
 mongoose
   .connect(env.MY_DB_URL)
@@ -16,6 +16,14 @@ mongoose
   });
 
 const app = express();
+
+app.use(
+  cors({
+    origin: ["http://localhost:4000/"],
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 
 app.use(
   session({
