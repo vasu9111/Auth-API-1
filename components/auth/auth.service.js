@@ -124,6 +124,10 @@ const registerUser = async (reqBody) => {
     };
   } catch (err) {
     const error = new Error(err.message);
+    if (err.name === "ValidationError") {
+      err.code = "DB_ERR";
+      err.status = 400;
+    }
     error.code = err.code || "SERVER_ERR";
     error.status = err.status || 500;
     throw error;
