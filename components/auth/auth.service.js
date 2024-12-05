@@ -111,7 +111,17 @@ const registerUser = async (reqBody) => {
     const accessToken = await authHelper.generateAccessToken(newUser._id);
     const refreshToken = await authHelper.generateRefreshToken(newUser._id);
 
-    return { newUser, accessToken: accessToken, refreshToken: refreshToken };
+    const newUserDetail = {
+      name: newUser.name,
+      email: newUser.email,
+      registeredAt: newUser.registeredAt,
+    };
+
+    return {
+      newUserDetail,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    };
   } catch (err) {
     const error = new Error(err.message);
     error.code = err.code || "SERVER_ERR";
