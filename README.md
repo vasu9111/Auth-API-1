@@ -40,27 +40,47 @@ Run `http://localhost:4000/` in postman in postman
 
 `http://localhost:4000/`
 
-# Endpoints :-
+# Endpoints
 
-- 1.  Registration page:-
-      Method: POST
-      URL: '/api/auth/registration/custom-validation'
-      URL: '/api/auth/registration/joi-validation'
-      URL: '/api/auth/registration/db-validation'
+## 1. Registration
+Handles user registration with different validation methods.
 
-- 2.  Login page :-
-      Method: POST
-      URL: '/api/auth/login/custom-validation'
-      URL: '/api/auth/login/joi-validation'
+- **Method:** `POST`
+- **URLs:**
+  - `/api/auth/registration/custom-validation`
+  - `/api/auth/registration/joi-validation`
+  - `/api/auth/registration/db-validation`
 
-- 3.  Logout :-
-      Method: GET
-      URL: '/api/auth/logout'
+---
 
-- 4.  Private route:-
-      Method: GET
-      URL: '/api/page/private'
+## 2. Login
+Handles user login with different validation methods.
 
-- 5.  Renew access token :-
-      Method: POST
-      URL: '/api/auth/refresh'
+- **Method:** `POST`
+- **URLs:**
+  - `/api/auth/login/custom-validation`
+  - `/api/auth/login/joi-validation`
+
+---
+
+## 3. Logout
+Logs out the user and invalidates their session.
+
+- **Method:** `GET`
+- **URL:** `/api/auth/logout`
+
+---
+
+## 4. Private Route
+Access restricted content available only to authenticated users.
+
+- **Method:** `GET`
+- **URL:** `/api/page/private`
+
+---
+
+## 5. Renew Access Token
+Generates a new access token using a valid refresh token.
+
+- **Method:** `POST`
+- **URL:** `/api/auth/refresh`
