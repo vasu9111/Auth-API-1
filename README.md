@@ -1,7 +1,7 @@
 # Auth-API
 Authentication API
 
-# server
+# server 
 
 > REST APIs build with express.js
 
